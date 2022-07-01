@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 import 'homescreen.dart';
 import 'sign_up.dart';
@@ -13,6 +15,7 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   Widget _buildTextEmail() {
     return TextFormField(
+      controller: _emailController,
       decoration: const InputDecoration(
         hintText: "Email or Username",
         hintStyle: TextStyle(
@@ -27,6 +30,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget _buildTextPass() {
     return TextFormField(
+      controller: _passwordController,
       decoration: InputDecoration(
         hintText: "Password",
         hintStyle: const TextStyle(
@@ -34,7 +38,9 @@ class _SignInPageState extends State<SignInPage> {
           fontSize: 18.0,
         ),
         suffixIcon: IconButton(
-          icon: _passVis ? const Icon(Icons.visibility_off) : const Icon(Icons.visibility),
+          icon: _passVis
+              ? const Icon(Icons.visibility_off)
+              : const Icon(Icons.visibility),
           onPressed: () {
             setState(() {
               _passVis = !_passVis;
@@ -44,6 +50,43 @@ class _SignInPageState extends State<SignInPage> {
       ),
       obscureText: _passVis,
     );
+  }
+
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+
+  void login(
+    String email,
+    password,
+  ) async {
+    // print(email);
+    // print(password);
+    try {
+      Response response = await post(
+        Uri.parse('https://reqres.in/api/login'),
+        body: {
+          'email': email,
+          'password': password,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body.toString());
+        print(data);
+        // print(data['token']); // if use this command will only print token
+        print('successfully created');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          ),
+        );
+      } else {
+        print('error');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   @override
@@ -105,9 +148,15 @@ class _SignInPageState extends State<SignInPage> {
                 height: 30.0,
               ),
               GestureDetector(
+                // onTap: () {
+                //   Navigator.push(context,
+                //       MaterialPageRoute(builder: (context) => HomeScreen()));
+                // },
                 onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()));
+                  login(
+                    _emailController.text,
+                    _passwordController.text,
+                  );
                 },
                 child: Container(
                   height: 50.0,
@@ -148,7 +197,8 @@ class _SignInPageState extends State<SignInPage> {
                     onTap: () {
                       // Link to SignUp Page
                       Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (BuildContext context) => const SignUpPage()));
+                          builder: (BuildContext context) =>
+                              const SignUpPage()));
                     },
                     child: const Text(
                       "Sign up",
@@ -167,4 +217,3 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 }
-

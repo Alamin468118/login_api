@@ -91,7 +91,7 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  void login(
+  void register(
     String email,
     password,
   ) async {
@@ -170,7 +170,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               GestureDetector(
                 onTap: () {
-                  login(_emailController.text.toString(),
+                  register(_emailController.text.toString(),
                       _passwordController.text.toString());
                 },
                 child: Container(
